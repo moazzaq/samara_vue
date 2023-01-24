@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LivePostController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,4 +20,12 @@ Route::get('/', function () {
 });
 
 Route::resource('posts', PostController::class);
+
+Route::get('country', [PostController::class , 'country']);
+Route::get('getCountries', [PostController::class , 'getCountries']);
+Route::get('getStates', [PostController::class , 'getStates']);
+
+Route::get('live-post', [LivePostController::class , 'index']);
+Route::get('live-post/create', [LivePostController::class , 'create'])->name('posts.create');
+Route::get('live-post/{post}/edit', [LivePostController::class , 'edit'])->name('posts.edit');
 

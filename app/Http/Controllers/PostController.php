@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
+use App\Models\Country;
 use App\Models\Post;
+use App\Models\State;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -21,7 +23,7 @@ class PostController extends Controller
 
     public function getAllPosts()
     {
-        $posts = Post::all();
+        $posts = Post::latest()->get();
         return PostResource::collection($posts);
     }
 
@@ -43,7 +45,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+           'title' => 'required',
+           'desc' => 'required',
+        ]);
+
+        Post::create([
+            'title' => $request->title,
+            'desc' => $request->desc,
+        ]);
+
+        return response()->json(['code' => 200, 'message' => 'Created']);
     }
 
     /**
@@ -65,7 +77,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+       //return new PostResource($post);
+       return PostResource::make($post);
     }
 
     /**
@@ -77,7 +90,17 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'desc' => 'required',
+        ]);
+
+        $post->update([
+            'title' => $request->title,
+            'desc' => $request->desc,
+        ]);
+
+        return response()->json(['code' => 200, 'message' => 'Updated']);
     }
 
     /**
@@ -88,6 +111,27 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return response()->json(['code' => 200, 'message' => 'Deleted']);
+    }
+
+    public function country()
+    {
+        return view('country');
+    }
+
+    public function getCountries()
+    {
+        $data = Country::get();
+        return response()->json($data);
+    }
+    /**
+     * Retrieve states data
+     *
+     */
+    public function getStates(Request $request)
+    {
+        $data = State::where('country_id', $request->country_id)->get();
+        return response()->json($data);
     }
 }
